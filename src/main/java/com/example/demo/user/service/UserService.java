@@ -6,11 +6,12 @@ import com.example.demo.user.domain.UserStatus;
 import com.example.demo.user.domain.UserCreate;
 import com.example.demo.user.domain.UserUpdate;
 import com.example.demo.user.infra.UserEntity;
-import com.example.demo.user.infra.UserRepository;
+import com.example.demo.user.infra.UserJpaRepository;
 import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.example.demo.user.service.port.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
