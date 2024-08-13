@@ -1,11 +1,13 @@
 package com.example.demo.post.service;
 
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
 import com.example.demo.post.infra.PostEntity;
 import com.example.demo.post.infra.PostJpaRepository;
 import com.example.demo.post.service.port.PostRepository;
+import com.example.demo.user.domain.User;
 import com.example.demo.user.infra.UserEntity;
 import java.time.Clock;
 
@@ -20,23 +22,19 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
 
-    public PostEntity getPostById(long id) {
+    public Post getPostById(long id) {
         return postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Posts", id));
     }
 
-    public PostEntity createPost(PostCreate postCreate) {
-        UserEntity userEntity = userService.getByIdOrElseThrow(postCreate.getWriterId());
-        PostEntity postEntity = new PostEntity();
-        postEntity.setWriter(userEntity);
-        postEntity.setContent(postCreate.getContent());
-        postEntity.setCreatedAt(Clock.systemUTC().millis());
-        return postRepository.save(postEntity);
+    public Post create(PostCreate postCreate) {
+        User writer = userService.getByIdOrElseThrow(postCreate.getWriterId());
+        Post post = Post.from(writer, postCreate);
+        return postRepository.save(post);
     }
 
-    public PostEntity updatePost(long id, PostUpdate postUpdate) {
-        PostEntity postEntity = getPostById(id);
-        postEntity.setContent(postUpdate.getContent());
-        postEntity.setModifiedAt(Clock.systemUTC().millis());
-        return postRepository.save(postEntity);
+    public Post update(long id, PostUpdate postUpdate) {
+        Post post = getPostById(id);
+        post = post.update(postUpdate);
+        return postRepository.save(post);
     }
 }
